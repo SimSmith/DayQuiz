@@ -9,21 +9,17 @@
 <body>
     <div id="containter">
         <div id="question"></div>
-        <form>
-            Select numbers:<br>
-            <select id="option">
-                <option value="1" onclick="onSelectAnwser();">Monday</option>
-                <option value="2" onclick="onSelectAnwser();">Tuesday</option>
-                <option value="3" onclick="onSelectAnwser();">Wednesday</option>
-                <option value="4" onclick="onSelectAnwser();">Thursday</option>
-                <option value="5" onclick="onSelectAnwser();">Friday</option>
-                <option value="6" onclick="onSelectAnwser();">Saturday</option>
-                <option value="0" onclick="onSelectAnwser();">Sunday</option>
-            </select>
-            <div id="text"></div>
-        </form>
+        <button onclick="onSelectAnwser(1)">Monday</button>
+        <button onclick="onSelectAnwser(2)">Tuesday</button>
+        <button onclick="onSelectAnwser(3)">Wednesday</button>
+        <button onclick="onSelectAnwser(4)">Thursday</button>
+        <button onclick="onSelectAnwser(5)">Friday</button>
+        <button onclick="onSelectAnwser(6)">Saturday</button>
+        <button onclick="onSelectAnwser(7)">Sunday</button>
+        <div id="text"></div>
     </div>
     <script src="./index.js"></script>
+    <img src="help.png" alt="A cheatsheet for computing the weekday.">
 </body>
 
 </html>

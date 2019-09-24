@@ -18,11 +18,11 @@ function randomDate() {
     return date;
 }
 
-function onSelectAnwser(){
-    var answer = document.getElementById("option")
+function onSelectAnwser(index){
+    console.log("index", index)
     var response = document.getElementById("text")
-    if (answer.value == date.getDay()) {
-        response.innerText = "Correct";
+    if (index == date.getDay()) {
+        response.innerText = "Correct, anwser was " + date.toDateString();
     } else {
         response.innerText = "Wrong, anwser was " + date.toDateString();
     }
