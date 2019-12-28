@@ -2,10 +2,13 @@
 use stdweb::web::Date;
 use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use stdweb::js;
+use stdweb::unstable::TryInto;
 
 pub struct Model {
     console: ConsoleService,
     correct_answer: bool,
+    question_date: Date,
 }
 
 pub enum Msg {
@@ -14,14 +17,20 @@ pub enum Msg {
 
 
 #[derive(Debug)]
-pub enum Weekday {
+pub enum Weekday {  // Make use of implicit discriminator
+    Sunday,
     Monday,
     Tuesday,
     Wednesday,
     Thursday,
     Friday,
     Saturday,
-    Sunday,
+}
+
+impl Weekday {
+    pub fn equal(self, nr: i32) -> bool {
+        self as i32 == nr
+    }
 }
 
 impl Component for Model {
@@ -32,38 +41,29 @@ impl Component for Model {
         Model {
             console: ConsoleService::new(),
             correct_answer: false,
+            question_date: random_date(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Answer(Weekday::Monday) => {
-                self.console.log("Monday ehh");
-            }
-            Msg::Answer(Weekday::Tuesday) => {
-                self.console.log("Tuesday ehh");
-            }
-            Msg::Answer(Weekday::Wednesday) => {
-                self.console.log("Wednesday ehh");
-            }
-            Msg::Answer(Weekday::Thursday) => {
-                self.console.log("Thursday ehh");
-            }
-            Msg::Answer(Weekday::Friday) => {
-                self.correct_answer = true;
-                self.console.log("Friday ehh");
-            }
-            Msg::Answer(Weekday::Saturday) => {
-                self.console.log("Saturday ehh");
-            }
-            Msg::Answer(Weekday::Sunday) => {
-                self.console.log("Sunday ehh");
+            Msg::Answer(day) => {
+                self.correct_answer = day.equal(self.question_date.get_day());
+                if self.correct_answer {
+                    self.console.log("Sō desu!");
+                    self.question_date = random_date();
+                }
+                else {
+                    self.console.log("Chigaimasu...");
+                }
             }
         }
-        true
+        self.correct_answer
     }
 
     fn view(&self) -> Html<Self> {
+        let date_txt = date_to_question(&self.question_date);
+        let respones_txt = if self.correct_answer {"That was right!"} else {"What was your answer again?"};
         html! {
             <div>
                 <nav class="menu">
@@ -75,12 +75,25 @@ impl Component for Model {
                     <button onclick=|_| Msg::Answer(Weekday::Saturday)>{ "Saturday" }</button>
                     <button onclick=|_| Msg::Answer(Weekday::Sunday)>{ "Sunday" }</button>
                 </nav>
-                <p>{ if self.correct_answer {"That's right"} else {"What was your answer again?"} }</p>
-                <p>{ Date::new().to_string() }</p>
-                <img id="cheatImage" src="help.png" alt="A cheatsheet for computing the weekday."></img>
+                <p>{ date_txt }</p>
+                <p>{ respones_txt }</p>
+                <img id="cheatImage" src="help.png" alt="(A cheatsheet for computing the weekday)"></img>
             </div>
         }
     }
+}
+
+fn random_date() -> Date {
+    let start_day = Date::utc(2019, 0, 1, 0, 0, 0, 0);
+    let end_day = Date::utc(2020, 0, 1, 0, 0, 0, 0);
+    let random = js! { return Math.random() };
+    let rand_point: f64 = random.try_into().unwrap();  // Between [0,1)
+    let rand_time = (end_day - start_day) * rand_point + start_day;
+    Date::from_time(rand_time)
+}
+
+fn date_to_question(d: &Date) -> String {
+    format!("What day was {} / {:02} / {:02}?", d.get_full_year(), d.get_month()+1, d.get_date())
 }
 
 fn main() {
